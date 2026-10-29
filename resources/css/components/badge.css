@@ -1,0 +1,26 @@
+/* Badge lembut */
+.badge {
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.3em 0.7em;
+}
+.badge-soft-grey {
+  background: var(--s-grey-bg);
+  color: var(--s-grey-tx);
+}
+.badge-soft-blue {
+  background: var(--s-blue-bg);
+  color: var(--s-blue-tx);
+}
+.badge-soft-green {
+  background: var(--s-green-bg);
+  color: var(--s-green-tx);
+}
+.badge-soft-amber {
+  background: var(--s-amber-bg);
+  color: var(--s-amber-tx);
+}
+.badge-soft-red {
+  background: var(--s-red-bg);
+  color: var(--s-red-tx);
+}

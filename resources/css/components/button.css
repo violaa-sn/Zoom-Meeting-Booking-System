@@ -1,0 +1,42 @@
+.btn {
+  --bs-btn-font-weight: 600;
+}
+.btn-primary {
+  --bs-btn-bg: #3b6ee0;
+  --bs-btn-border-color: #3b6ee0;
+  --bs-btn-hover-bg: #2f5cc4;
+  --bs-btn-hover-border-color: #2f5cc4;
+  --bs-btn-active-bg: #2a52b0;
+  --bs-btn-active-border-color: #2a52b0;
+  --bs-btn-disabled-bg: #3b6ee0;
+  --bs-btn-disabled-border-color: #3b6ee0;
+  --bs-btn-focus-shadow-rgb: 59, 110, 224;
+}
+.btn-outline-secondary {
+  --bs-btn-color: #2a3648;
+  --bs-btn-border-color: #cfd8e6;
+  --bs-btn-hover-bg: #f2f5fa;
+  --bs-btn-hover-color: #1c2738;
+  --bs-btn-hover-border-color: #cfd8e6;
+  --bs-btn-active-bg: #e8edf6;
+  --bs-btn-active-color: #1c2738;
+  --bs-btn-active-border-color: #cfd8e6;
+}
+.btn-light {
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: transparent;
+  --bs-btn-color: #667489;
+  --bs-btn-hover-bg: #eceff5;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-hover-color: #1c2738;
+}
+.btn-icon {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+.btn-icon.text-danger:hover {
+  background: var(--s-red-bg);
+}

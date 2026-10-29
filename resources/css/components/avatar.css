@@ -1,0 +1,16 @@
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #dbe6fb;
+  color: var(--zb-navy);
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex: none;
+}
+.avatar--soft {
+  background: var(--s-blue-bg);
+  color: var(--s-blue-tx);
+}

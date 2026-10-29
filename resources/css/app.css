@@ -1,4 +1,6 @@
-@import 'tailwindcss';
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* @import 'sweetalert2/dist/sweetalert2.min.css'; */
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -8,4 +10,35 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* ---------- Tema: warna Zoom Booking Gereja di atas Bootstrap 5 ---------- */
+:root {
+  --zb-navy: #1b365d;
+  --zb-line: #e2e8f1;
+  --zb-muted: #667489;
+  --zb-ink: #1c2738;
+  --bs-body-font-family:
+    "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif;
+  --bs-body-font-size: 0.875rem;
+  --bs-body-bg: #f2f5fa;
+  --bs-body-color: #1c2738;
+  --bs-primary: #3b6ee0;
+  --bs-primary-rgb: 59, 110, 224;
+  --bs-link-color: #2f5cc4;
+  --bs-link-hover-color: #244a9e;
+  --bs-border-color: #e2e8f1;
+  --bs-border-radius: 0.6rem;
+  --bs-border-radius-lg: 0.9rem;
+  --bs-secondary-color: #667489;
+  --s-green-bg: #d9f4e5;
+  --s-green-tx: #17653d;
+  --s-amber-bg: #fff0c9;
+  --s-amber-tx: #7d4c00;
+  --s-blue-bg: #dae7ff;
+  --s-blue-tx: #1b46a3;
+  --s-red-bg: #fde1e1;
+  --s-red-tx: #a52a22;
+  --s-grey-bg: #eceff5;
+  --s-grey-tx: #4a5568;
 }

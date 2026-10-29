@@ -1,0 +1,5 @@
+.card {
+  --bs-card-border-color: var(--zb-line);
+  --bs-card-border-radius: 0.9rem;
+  --bs-card-inner-border-radius: 0.85rem;
+}

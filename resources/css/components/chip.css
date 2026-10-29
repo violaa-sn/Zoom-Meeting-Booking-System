@@ -1,0 +1,33 @@
+/* Legend + kalender */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.chip i {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: currentColor;
+  opacity: 0.55;
+}
+.chip--available {
+  background: var(--s-green-bg);
+  color: var(--s-green-tx);
+}
+.chip--pending {
+  background: var(--s-amber-bg);
+  color: var(--s-amber-tx);
+}
+.chip--approved {
+  background: var(--s-blue-bg);
+  color: var(--s-blue-tx);
+}
+.chip--full {
+  background: var(--s-red-bg);
+  color: var(--s-red-tx);
+}
