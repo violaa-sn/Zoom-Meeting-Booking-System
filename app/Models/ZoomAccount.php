@@ -28,6 +28,12 @@ class ZoomAccount extends Model
     public const TYPE_PRO = 'pro';
     public const TYPE_BUSINESS = 'business';
 
+    /** Pilihan tipe akun untuk dropdown. */
+    public const TYPES = [
+        self::TYPE_PRO => 'Pro',
+        self::TYPE_BUSINESS => 'Business',
+    ];
+
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
 

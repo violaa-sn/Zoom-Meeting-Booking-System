@@ -1,0 +1,6 @@
+.note {
+  background: #eef3fb;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.9rem;
+  color: #34465f;
+}

@@ -11,27 +11,24 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
 
-            // restrictOnDelete di semua FK: riwayat booking tidak boleh hilang
-            // karena user, akun Zoom, atau admin dihapus
             $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
-            // Wajib diisi: user sudah memilih akun dari rekomendasi sebelum mengajukan
-            $table->foreignId('zoom_account_id')->constrained('zoom_accounts')->restrictOnDelete();
+            $table->foreignId('zoom_account_id')->nullable()->constrained('zoom_accounts')->restrictOnDelete();
+            // Tipe akun yang diminta user (pro / business). Admin hanya diberi pilihan akun bertipe ini
+            $table->enum('account_type', ['pro', 'business']);
             $table->foreignId('approved_by')->nullable()->constrained('users')->restrictOnDelete();
 
             $table->enum('purpose', ['rapat', 'presentasi', 'pelatihan', 'wawancara', 'diskusi', 'lainnya']);
-            // Diisi hanya jika purpose = lainnya
             $table->string('purpose_other')->nullable();
-            // Wajib diisi di form, tapi hanya informasi. Tidak dipakai untuk memblokir booking
-            $table->unsignedInteger('participant_count');
+            $table->enum('participant_count', ['100', '300', '500', '500+']);
 
             // Tanggal yang dipilih user (kejadian pertama)
             $table->date('starts_on');
-            // Jam mulai & selesai. Jika end_time <= start_time berarti meeting melewati tengah malam
+            // Jam mulai & selesai, menit bebas (mis. 09:12 sampai 10:24). Kalender saja yang dipecah per 30 menit.
+            // Jika end_time <= start_time berarti meeting melewati tengah malam
             $table->time('start_time');
             $table->time('end_time');
 
             // Pengulangan. none = tidak berulang.
-            // Tidak ada "never": batas akhir wajib On atau After
             $table->enum('recurrence_frequency', ['none', 'day', 'week', 'month', 'year'])->default('none');
             // Angka "repeat every" (contoh: setiap 2 minggu)
             $table->unsignedSmallInteger('repeat_interval')->default(1);

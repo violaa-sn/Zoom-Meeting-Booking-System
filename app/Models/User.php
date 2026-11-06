@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 
 // role dan status ikut fillable karena admin yang mengisinya lewat form manajemen user.
 // Pastikan Form Request user biasa (ganti password sendiri, dll.) TIDAK menerima field ini.
-#[Fillable(['department_id', 'name', 'username', 'email', 'password', 'role', 'status'])]
+#[Fillable(['department_id', 'name', 'username', 'password', 'role', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -36,7 +36,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

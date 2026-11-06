@@ -1,0 +1,7 @@
+.modal-content,
+.offcanvas,
+.list-group {
+  --bs-modal-bg: #fff;
+  --bs-offcanvas-bg: #fff;
+  --bs-list-group-bg: #fff;
+}

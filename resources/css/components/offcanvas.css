@@ -1,0 +1,42 @@
+/* Offcanvas + form booking */
+.offcanvas {
+  --bs-offcanvas-width: 500px;
+}
+.offcanvas-header {
+  border-bottom: 1px solid var(--zb-line);
+}
+.offcanvas-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.offcanvas-form .offcanvas-body {
+  flex: 1 1 auto;
+}
+.offcanvas-foot .btn {
+  white-space: nowrap;
+}
+.offcanvas-foot {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--zb-line);
+  background: #fafbfd;
+  padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+}
+@media (max-width: 575.98px) {
+  .offcanvas-foot .btn {
+    padding-inline: 0.6rem;
+  }
+  .offcanvas-foot .btn,
+  .offcanvas-foot > div .btn {
+    flex: 1;
+  }
+  .offcanvas-foot > div {
+    flex: 1;
+    display: flex !important;
+    gap: 0.5rem;
+  }
+}

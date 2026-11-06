@@ -1,0 +1,24 @@
+.app-tabs .nav {
+  scrollbar-width: none;
+}
+.app-tabs .nav::-webkit-scrollbar {
+  display: none;
+}
+.app-tabs .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  color: var(--zb-muted);
+  font-weight: 600;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+}
+.app-tabs .nav-link:hover {
+  color: var(--zb-ink);
+}
+.app-tabs .nav-link.active {
+  color: var(--zb-navy);
+  border-bottom-color: #3b6ee0;
+}

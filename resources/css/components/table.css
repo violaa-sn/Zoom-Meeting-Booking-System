@@ -1,0 +1,20 @@
+.table {
+  --bs-table-bg: transparent;
+}
+.table > thead th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--zb-muted);
+  background: #f8fafd;
+  white-space: nowrap;
+}
+.table > :not(caption) > * > * {
+  padding: 0.8rem 1rem;
+  vertical-align: middle;
+}
+.cell-main b {
+  display: block;
+}
+.cell-main small {
+  color: var(--zb-muted);
+}

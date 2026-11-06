@@ -1,7 +1,9 @@
 import './bootstrap';
-import 'bootstrap';
-
+import '@fontsource-variable/plus-jakarta-sans';
+import * as bootstrap from 'bootstrap';
 import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
 
+window.bootstrap = bootstrap;
 window.Swal = Swal;
+
+import './ui';

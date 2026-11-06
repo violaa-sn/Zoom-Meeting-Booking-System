@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Nullable karena admin boleh tidak punya departemen
+            // Setiap pengguna (termasuk admin) WAJIB punya departemen. Aturan wajibnya dijaga di aplikasi
             // restrictOnDelete: departemen yang masih punya user TIDAK bisa dihapus
             $table->foreignId('department_id')->nullable()->after('id')
                 ->constrained('departments')->restrictOnDelete();
@@ -21,13 +21,6 @@ return new class extends Migration
             // Toggle aktif/nonaktif. User nonaktif tidak bisa login, tapi riwayatnya tetap ada
             $table->enum('status', ['active', 'inactive'])->default('active')->after('role');
         });
-
-        // Dipisah dari blok di atas supaya aman di semua driver database.
-        // Email tidak dipakai login lagi, jadi tidak wajib diisi.
-        // Kolom tetap unique; MySQL mengizinkan banyak nilai NULL pada kolom unique.
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->nullable()->change();
-        });
     }
 
     public function down(): void
@@ -38,7 +31,5 @@ return new class extends Migration
             $table->dropUnique(['username']);
             $table->dropColumn(['username', 'role', 'status']);
         });
-        // Email sengaja tidak dikembalikan jadi NOT NULL, karena bisa gagal
-        // kalau sudah ada user yang emailnya kosong.
     }
 };

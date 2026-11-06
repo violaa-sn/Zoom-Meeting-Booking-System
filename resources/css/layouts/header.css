@@ -1,0 +1,52 @@
+/* Header dan tab */
+.app-header {
+  background: var(--zb-navy);
+  color: #fff;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  min-width: 0;
+}
+.brand:hover {
+  color: #fff;
+}
+.brand svg {
+  width: 40px;
+  height: 40px;
+  flex: none;
+}
+.brand b {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.15;
+  font-weight: 700;
+}
+.brand small {
+  opacity: 0.8;
+  font-size: 0.75rem;
+}
+.header-date {
+  font-size: 0.8125rem;
+  opacity: 0.9;
+  padding-right: 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+.user-btn {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0.25rem 0.4rem;
+  border-radius: 0.6rem;
+}
+.user-btn:hover,
+.user-btn:focus,
+.user-btn.show {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}

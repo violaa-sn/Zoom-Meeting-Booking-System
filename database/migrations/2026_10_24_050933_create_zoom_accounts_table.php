@@ -9,18 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('zoom_accounts', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->id();       
+            $table->string('name')->unique();
             $table->string('email')->unique();
             $table->enum('account_type', ['pro', 'business']);
 
             // Di UI disebut "Kapasitas meeting".
-            // Jumlah meeting yang boleh berjalan BERSAMAAN di akun ini.
-            // Ini patokan status Penuh: jika meeting approved yang tumpang tindih
             // sudah sebanyak angka ini, slot tersebut Penuh. Minimal 1 (divalidasi di kode).
             $table->unsignedSmallInteger('allowed_login_users')->default(1);
 
-            // Maksimal peserta per meeting. HANYA INFORMASI, tidak dipakai untuk memblokir booking.
+            // Maksimal peserta per meeting. Akun hanya direkomendasikan kalau angka ini >= jumlah peserta yang dipilih user.
             $table->unsignedInteger('participant_capacity');
 
             // Akun berlaku sampai tanggal ini (termasuk hari itu)

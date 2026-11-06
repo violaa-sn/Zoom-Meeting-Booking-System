@@ -50,13 +50,19 @@ class BookingService
      * beserta alasannya, supaya UI bisa menjelaskan kenapa akun itu tidak dipilih.
      *
      * @param  array<int, array{starts_at: CarbonImmutable, ends_at: CarbonImmutable}>  $intervals
+     * @param  string|null  $accountType  pro|business, null = semua tipe
+     * @param  string|null  $participantCount  pilihan jumlah peserta; akun dengan participant_capacity di bawahnya tidak dimasukkan
      * @return Collection<int, array{account: ZoomAccount, available: bool, reason: ?string, conflicts: array}>
      */
-    public function recommend(array $intervals): Collection
+    public function recommend(array $intervals, ?string $accountType = null, ?string $participantCount = null): Collection
     {
         $lastDay = collect($intervals)->max(fn ($i) => $i['ends_at']->format('Y-m-d'));
 
         return ZoomAccount::active()
+            // Hanya akun bertipe yang dipilih user (pro / business)
+            ->when($accountType, fn ($q) => $q->where('account_type', $accountType))
+            // Kapasitas peserta akun harus sama dengan atau lebih besar dari jumlah peserta yang dipilih
+            ->when($participantCount, fn ($q) => $q->where('participant_capacity', '>=', Booking::minCapacityFor($participantCount)))
             ->ordered()
             ->get()
             ->sortBy([['is_default', 'desc'], ['sort_order', 'asc'], ['id', 'asc']])
@@ -84,9 +90,10 @@ class BookingService
     }
 
     /**
-     * Simpan pengajuan (status pending). Status Penuh dicek ulang di sini karena
-     * kalender bisa berubah antara saat user melihat rekomendasi dan saat klik Ajukan.
-     * Pengecekan final tetap dilakukan saat Admin approve.
+     * Simpan pengajuan (status pending). User TIDAK memilih akun Zoom: akun ditentukan admin saat menyetujui.
+     * Di sini hanya dipastikan masih ada minimal satu akun (bertipe yang diminta) yang kosong untuk
+     * semua tanggal, karena kalender bisa berubah antara saat user melihat rekomendasi dan saat klik Ajukan.
+     * Pengecekan final dan pemilihan akun dilakukan saat admin approve.
      *
      * @param  array<string, mixed>  $data  hasil validasi StoreBookingRequest
      *
@@ -94,38 +101,21 @@ class BookingService
      */
     public function submit(User $user, array $data): Booking
     {
-        $account = ZoomAccount::active()->find($data['zoom_account_id']);
-        if (! $account) {
-            throw ValidationException::withMessages(['zoom_account_id' => 'Akun Zoom tidak ditemukan atau tidak aktif.']);
-        }
-
         $intervals = $this->intervalsFrom($data);
-        $lastDay = collect($intervals)->max(fn ($i) => $i['ends_at']->format('Y-m-d'));
 
-        if ($account->subscription_expires_at && $lastDay
-            && $account->subscription_expires_at->format('Y-m-d') < $lastDay) {
+        if (! $this->recommend($intervals, $data['account_type'], $data['participant_count'])->contains('available', true)) {
             throw ValidationException::withMessages([
-                'zoom_account_id' => 'Langganan akun ini berakhir sebelum seri booking selesai.',
-            ]);
-        }
-
-        $conflicts = $this->calendar->conflicts($account, $intervals);
-        if ($conflicts !== []) {
-            $dates = collect($conflicts)->take(3)
-                ->map(fn ($c) => $c['starts_at']->format('d-m-Y'))
-                ->implode(', ');
-
-            throw ValidationException::withMessages([
-                'zoom_account_id' => "Akun ini sudah penuh pada {$dates}. Pilih akun lain atau ubah jadwal.",
+                'account_type' => 'Tidak ada akun '.ucfirst($data['account_type']).' yang kosong pada jadwal ini untuk '.(Booking::PARTICIPANT_OPTIONS[$data['participant_count']] ?? $data['participant_count']).' peserta. Ubah jadwal, tipe akun, atau jumlah peserta.',
             ]);
         }
 
         $isRecurring = ($data['recurrence_frequency'] ?? Booking::RECURRENCE_NONE) !== Booking::RECURRENCE_NONE;
 
-        return DB::transaction(function () use ($user, $account, $data, $isRecurring) {
+        return DB::transaction(function () use ($user, $data, $isRecurring) {
             $booking = Booking::create([
                 'user_id' => $user->id,
-                'zoom_account_id' => $account->id,
+                'zoom_account_id' => null, // dipilih admin saat menyetujui
+                'account_type' => $data['account_type'],
                 'purpose' => $data['purpose'],
                 'purpose_other' => $data['purpose'] === 'lainnya' ? ($data['purpose_other'] ?? null) : null,
                 'participant_count' => $data['participant_count'],

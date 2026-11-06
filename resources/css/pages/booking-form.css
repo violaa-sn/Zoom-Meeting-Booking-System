@@ -1,0 +1,157 @@
+.steps {
+  display: flex;
+  gap: 0.5rem;
+}
+.steps div {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--s-grey-bg);
+  color: var(--zb-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.steps div.is-active {
+  background: var(--s-blue-bg);
+  color: var(--s-blue-tx);
+}
+.fieldset-box {
+  border: 1px solid var(--zb-line);
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  background: #fafbfd;
+}
+.days {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.day {
+  position: relative;
+}
+.day input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+.day span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #cfd8e6;
+  background: #fff;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+.day input:checked + span {
+  background: #3b6ee0;
+  border-color: #3b6ee0;
+  color: #fff;
+}
+.day input:focus-visible + span {
+  outline: 2px solid #3b6ee0;
+  outline-offset: 2px;
+}
+.choice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1.5px solid var(--zb-line);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  background: #fff;
+  margin: 0;
+}
+.choice:has(input:checked) {
+  border-color: #3b6ee0;
+  background: #f4f8ff;
+}
+.choice.is-disabled {
+  background: #f8f9fb;
+  cursor: not-allowed;
+}
+.choice.is-disabled .choice__title {
+  color: var(--zb-muted);
+}
+.choice input {
+  margin-top: 0.2rem;
+}
+.choice__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-weight: 700;
+}
+.choice__title i {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--c, #3b6ee0);
+}
+.choice small {
+  display: block;
+  color: var(--zb-muted);
+  margin-top: 0.15rem;
+}
+.choice .reason {
+  color: var(--s-red-tx);
+  font-weight: 500;
+}
+.choice .ok {
+  color: var(--s-green-tx);
+  font-weight: 600;
+}
+.swatches {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.swatch {
+  position: relative;
+}
+.swatch input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+.swatch span {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--c);
+}
+.swatch input:checked + span {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--c);
+}
+.swatch input:focus-visible + span {
+  outline: 2px solid var(--zb-ink);
+  outline-offset: 4px;
+}
+
+/* Rekomendasi akun hanya untuk dilihat (user tidak memilih): kartu tanpa radio */
+.choice--info {
+  grid-template-columns: 1fr;
+  cursor: default;
+}
+.duration-hint {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  color: var(--zb-muted);
+}
+.duration-hint.is-error {
+  color: var(--s-red-tx);
+  font-weight: 600;
+}
+/* Pilihan akun untuk admin di modal Setujui */
+.choice--pick {
+  grid-template-columns: auto 1fr;
+}

@@ -14,11 +14,14 @@ use Generator;
  */
 class RecurrenceExpander
 {
-    /** Batas maksimal seri: 1 tahun sejak tanggal mulai. */
-    public const MAX_SERIES_YEARS = 1;
-
-    /** Pengaman supaya loop tidak pernah tak terbatas. */
-    private const MAX_ITERATIONS = 1500;
+    /**
+     * Batas jumlah tanggal per seri (config/booking.php). Sengaja dilebihkan 1 supaya validasi
+     * bisa tahu "melewati batas" (jumlah > max_occurrences) tanpa menghitung ribuan tanggal lagi.
+     */
+    private static function cap(): int
+    {
+        return (int) config('booking.max_occurrences', 3000) + 1;
+    }
 
     /**
      * @return array<int, array{starts_at: CarbonImmutable, ends_at: CarbonImmutable}>
@@ -56,21 +59,19 @@ class RecurrenceExpander
         array $weekDays = [],
     ): array {
         $startsOn = $startsOn->startOfDay();
-        $limit = $startsOn->addYears(self::MAX_SERIES_YEARS)->endOfDay();
+        $cap = self::cap();
         $interval = max(1, $interval);
 
         $dates = [];
         foreach ($this->candidateDates($startsOn, $frequency, $interval, $weekDays) as $date) {
-            if ($date > $limit) {
-                break;
-            }
             if ($endType === Booking::END_ON && $endsOn !== null && $date->startOfDay() > $endsOn->startOfDay()) {
                 break;
             }
 
             $dates[] = $date;
 
-            if ($endType === Booking::END_AFTER && $endsAfter !== null && count($dates) >= $endsAfter) {
+            if (($endType === Booking::END_AFTER && $endsAfter !== null && count($dates) >= $endsAfter)
+                || count($dates) >= $cap) {
                 break;
             }
         }
@@ -80,15 +81,18 @@ class RecurrenceExpander
 
     /**
      * Tanggal kandidat, selalu urut naik. Pemanggil yang berhenti sendiri
-     * (batas akhir / batas 1 tahun).
+     * (batas akhir / batas jumlah tanggal).
      *
      * @return Generator<int, CarbonImmutable>
      */
     private function candidateDates(CarbonImmutable $startsOn, string $frequency, int $interval, array $weekDays): Generator
     {
+        // Pengaman loop: tidak pernah menghasilkan lebih dari batas jumlah tanggal (+ sedikit cadangan)
+        $max = self::cap() + 10;
+
         switch ($frequency) {
             case Booking::RECURRENCE_DAY:
-                for ($i = 0; $i < self::MAX_ITERATIONS; $i++) {
+                for ($i = 0; $i < $max; $i++) {
                     yield $startsOn->addDays($i * $interval);
                 }
                 break;
@@ -102,7 +106,7 @@ class RecurrenceExpander
 
                 // Pekan dihitung Minggu-Sabtu, sesuai urutan lingkaran hari "S M T W T F S"
                 $firstWeek = $startsOn->startOfWeek(CarbonInterface::SUNDAY);
-                for ($w = 0; $w < self::MAX_ITERATIONS; $w++) {
+                for ($w = 0; $w < $max; $w++) {
                     $weekStart = $firstWeek->addWeeks($w * $interval);
                     foreach ($days as $day) {
                         $date = $weekStart->addDays($day);
@@ -114,13 +118,13 @@ class RecurrenceExpander
                 break;
 
             case Booking::RECURRENCE_MONTH:
-                for ($i = 0; $i < self::MAX_ITERATIONS; $i++) {
+                for ($i = 0; $i < $max; $i++) {
                     yield $startsOn->addMonthsNoOverflow($i * $interval);
                 }
                 break;
 
             case Booking::RECURRENCE_YEAR:
-                for ($i = 0; $i < self::MAX_ITERATIONS; $i++) {
+                for ($i = 0; $i < $max; $i++) {
                     yield $startsOn->addYearsNoOverflow($i * $interval);
                 }
                 break;

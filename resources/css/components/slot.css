@@ -1,0 +1,49 @@
+.slot {
+  display: block;
+  width: calc(100% - 4px);
+  height: 26px;
+  margin: 0 2px;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 26px;
+}
+.slot--available {
+  background: var(--s-green-bg);
+  color: var(--s-green-tx);
+}
+.slot--pending {
+  background: var(--s-amber-bg);
+  color: var(--s-amber-tx);
+}
+.slot--approved {
+  background: var(--s-blue-bg);
+  color: var(--s-blue-tx);
+}
+.slot--full {
+  background: var(--s-red-bg);
+  color: var(--s-red-tx);
+}
+button.slot {
+  cursor: pointer;
+}
+button.slot:hover {
+  box-shadow: inset 0 0 0 2px #3b6ee0;
+}
+button.slot:focus-visible {
+  outline: 2px solid #3b6ee0;
+  outline-offset: 1px;
+}
+.slot.is-past {
+  opacity: 0.45;
+  cursor: default;
+}
+.slot.is-closed {
+  cursor: not-allowed;
+}

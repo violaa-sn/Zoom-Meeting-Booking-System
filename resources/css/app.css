@@ -1,6 +1,29 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* @import 'sweetalert2/dist/sweetalert2.min.css'; */
+@import './base/theme.css';
+@import './components/button.css';
+@import './components/form.css';
+@import './components/card.css';
+@import './components/table.css';
+@import './components/icon.css';
+@import './components/badge.css';
+@import './layouts/header.css';
+@import './components/avatar.css';
+@import './layouts/tabs.css';
+@import './components/page-header.css';
+@import './components/chip.css';
+@import './pages/calendar.css';
+@import './components/slot.css';
+@import './components/note.css';
+@import './components/offcanvas.css';
+@import './pages/booking-form.css';
+@import './components/table-stack.css';
+@import './pages/login.css';
+@import './base/utilities.css';
+@import './components/notification-bell.css';
+@import './base/surfaces.css';
+@import './components/password-toggle.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -11,6 +34,8 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
 
 /* ---------- Tema: warna Zoom Booking Gereja di atas Bootstrap 5 ---------- */
 :root {

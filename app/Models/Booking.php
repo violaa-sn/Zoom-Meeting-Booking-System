@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'user_id',
     'zoom_account_id',
+    'account_type',
     'approved_by',
     'purpose',
     'purpose_other',
@@ -46,10 +47,31 @@ class Booking extends Model
 
     public const PURPOSES = ['rapat', 'presentasi', 'pelatihan', 'wawancara', 'diskusi', 'lainnya'];
 
+    /** Pilihan "Jumlah peserta" di form. Dipakai menyaring akun (lihat PARTICIPANT_MIN_CAPACITY). Kunci disimpan di database. */
+    public const PARTICIPANT_OPTIONS = [
+        '100' => '100',
+        '300' => '300',
+        '500' => '500',
+        '500+' => 'Lebih dari 500',
+    ];
+
+    /** Kapasitas peserta minimal akun untuk tiap pilihan. "500+" berarti harus di atas 500. */
+    public const PARTICIPANT_MIN_CAPACITY = [
+        '100' => 100,
+        '300' => 300,
+        '500' => 500,
+        '500+' => 501,
+    ];
+
+    /** Peserta minimal yang harus didukung akun untuk pilihan ini (akun di bawahnya tidak boleh dipakai). */
+    public static function minCapacityFor(?string $participantCount): int
+    {
+        return self::PARTICIPANT_MIN_CAPACITY[$participantCount] ?? 0;
+    }
+
     protected function casts(): array
     {
         return [
-            'participant_count' => 'integer',
             'starts_on' => 'date',
             'repeat_interval' => 'integer',
             'recurrence_ends_on' => 'date',
@@ -91,6 +113,12 @@ class Booking extends Model
         return $this->hasMany(BookingNotification::class);
     }
 
+    /** Teks "Jumlah peserta" untuk ditampilkan di tabel. */
+    public function participantLabel(): string
+    {
+        return self::PARTICIPANT_OPTIONS[$this->participant_count] ?? (string) $this->participant_count;
+    }
+
     public function isRecurring(): bool
     {
         return $this->recurrence_frequency !== self::RECURRENCE_NONE;
@@ -123,7 +151,8 @@ class Booking extends Model
      *
      * Key yang didukung:
      *  - status           : pending|approved|rejected|cancelled
-     *  - zoom_account_id  : id akun Zoom
+     *  - zoom_account_id  : id akun Zoom (booking pending belum punya akun)
+     *  - account_type     : pro|business (tipe akun yang diminta)
      *  - department_id    : departemen peminjam
      *  - user_id          : peminjam tertentu
      *  - purpose          : salah satu dari PURPOSES
@@ -138,6 +167,7 @@ class Booking extends Model
         return $query
             ->when($filled('status'), fn (Builder $q) => $q->where('status', $filters['status']))
             ->when($filled('zoom_account_id'), fn (Builder $q) => $q->where('zoom_account_id', $filters['zoom_account_id']))
+            ->when($filled('account_type'), fn (Builder $q) => $q->where('account_type', $filters['account_type']))
             ->when($filled('user_id'), fn (Builder $q) => $q->where('user_id', $filters['user_id']))
             ->when($filled('purpose'), fn (Builder $q) => $q->where('purpose', $filters['purpose']))
             ->when($filled('department_id'), fn (Builder $q) => $q->whereHas(
