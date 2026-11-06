@@ -38,8 +38,8 @@
 .day span {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   border: 1px solid #cfd8e6;
   background: #fff;

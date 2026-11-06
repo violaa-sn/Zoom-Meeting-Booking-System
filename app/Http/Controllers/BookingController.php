@@ -27,7 +27,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Kalender rentang tanggal bebas (maksimal config('booking.max_range_days') hari), slot 30 menit.
+     * Kalender rentang tanggal bebas (batas config('booking.max_range_days'); kosong/0 = tanpa batas), slot 30 menit.
      *
      * ?account=      kosong -> hanya akun utama (supaya halaman tidak terlalu panjang)
      *                angka  -> akun tertentu
@@ -35,8 +35,21 @@ class BookingController extends Controller
      * ?from=&to=     format Y-m-d. Kosong -> pekan ini (Senin-Minggu)
      * ?days[]=       filter hari tertentu dari rentang (0 = Minggu ... 6 = Sabtu). Kosong -> semua hari
      */
-    public function calendar(Request $request): View
+    public function calendar(Request $request): View|RedirectResponse
     {
+        $filterKeys = ['from', 'to', 'account', 'days'];
+
+        // Dibuka tanpa filter (mis. dari tab menu): pulihkan filter terakhir yang dipakai user di sesi ini
+        if (! $request->hasAny($filterKeys) && is_array($saved = $request->session()->get('calendar_filters')) && $saved !== []) {
+            $accountId = $saved['account'] ?? null;
+            // Akun yang tersimpan bisa saja sudah dinonaktifkan/dihapus: jangan sampai halaman jadi 404
+            if (is_numeric($accountId) && ! ZoomAccount::active()->whereKey((int) $accountId)->exists()) {
+                unset($saved['account']);
+            }
+
+            return redirect()->route('booking.calendar', $request->query() + $saved);
+        }
+
         [$from, $to, $clamped, $dayCount] = $this->calendar->resolveRange(
             $request->query('from'),
             $request->query('to'),
@@ -64,6 +77,17 @@ class BookingController extends Controller
             $shown = $default ? collect([$default]) : collect();
         }
 
+        // Ingat filter ini supaya tidak ter-reset saat user pindah menu lalu kembali ke kalender.
+        // Disimpan hanya setelah lolos validasi di atas (akun yang tidak ada sudah di-404).
+        if ($request->hasAny($filterKeys)) {
+            $request->session()->put('calendar_filters', array_filter([
+                'from' => $from->format('Y-m-d'),
+                'to' => $to->format('Y-m-d'),
+                'account' => $selected !== null && $selected !== '' ? (string) $selected : null,
+                'days' => $selectedDays ?: null,
+            ], fn ($v) => $v !== null));
+        }
+
         // Parameter query untuk tombol rentang di view
         $fmt = 'Y-m-d';
         $thisWeekStart = $this->calendar->weekStart();
@@ -78,7 +102,7 @@ class BookingController extends Controller
             'dayCount' => $dayCount,
             'clamped' => $clamped,
             'selectedDays' => $selectedDays,
-            'maxDays' => (int) config('booking.max_range_days', 14),
+            'maxDays' => (int) config('booking.max_range_days'),
             // Geser mundur/maju selebar rentang yang sedang tampil
             'prev' => [
                 'from' => $from->subDays($dayCount)->format($fmt),
@@ -159,7 +183,7 @@ class BookingController extends Controller
 
         $filters = $request->only([
             'status', 'zoom_account_id', 'department_id', 'user_id',
-            'purpose', 'recurring', 'date_from', 'date_to', 'search',
+            'purpose', 'search',
         ]);
 
         if (! $user->isAdmin()) {

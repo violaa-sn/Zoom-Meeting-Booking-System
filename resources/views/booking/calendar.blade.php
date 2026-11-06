@@ -33,7 +33,7 @@
             <x-filter-select wrapperClass="col-12 col-md-4 col-xl-3" label="Pilih akun Zoom" name="account" data-autosubmit
                 :value="$selectedAccount" :options="['' => 'Akun utama'] + $accounts->pluck('name', 'id')->all() + ['all' => 'Semua akun']" />
             <div class="col-12 col-md-auto">
-                <span class="form-label d-block">Tampilkan hari</span>
+                <span class="form-label d-block">Tampilkan hari <small class="fw-normal text-secondary">(kosong = semua hari)</small></span>
                 <div class="days" role="group" aria-label="Filter hari">
                     @foreach ($dayCircles as $i => [$initial, $fullName])
                         <label class="day" title="{{ $fullName }}"><input type="checkbox" name="days[]"
@@ -41,7 +41,6 @@
                                 data-autosubmit aria-label="{{ $fullName }}"><span>{{ $initial }}</span></label>
                     @endforeach
                 </div>
-                <div class="form-text">Tidak ada yang dipilih = semua hari.</div>
             </div>
             <div class="col-12 d-flex flex-wrap gap-2" aria-label="Arti warna">
                 <span class="chip chip--available"><i></i>Tersedia</span>

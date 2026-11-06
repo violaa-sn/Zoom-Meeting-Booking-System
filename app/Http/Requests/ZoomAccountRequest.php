@@ -40,7 +40,6 @@ class ZoomAccountRequest extends FormRequest
             'status' => ['required', Rule::in([ZoomAccount::STATUS_ACTIVE, ZoomAccount::STATUS_INACTIVE])],
             'is_default' => ['boolean'],
             'color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'sort_order' => ['nullable', 'integer', 'min:0', 'max:65000'],
         ];
     }
 

@@ -6,13 +6,21 @@ use App\Http\Requests\ZoomAccountRequest;
 use App\Models\ZoomAccount;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ZoomAccountController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        return view('zoom-accounts.index', ['accounts' => ZoomAccount::ordered()->get()]);
+        $filters = $request->only(['search', 'account_type', 'allowed_login_users', 'participant_capacity']);
+
+        return view('zoom-accounts.index', [
+            'accounts' => ZoomAccount::query()->filter($filters)->listOrder()->get(),
+            // Pilihan dropdown diambil dari nilai yang benar-benar dipakai akun
+            'meetingCapacities' => ZoomAccount::query()->distinct()->orderBy('allowed_login_users')->pluck('allowed_login_users')->all(),
+            'participantCapacities' => ZoomAccount::query()->distinct()->orderBy('participant_capacity')->pluck('participant_capacity')->all(),
+        ]);
     }
 
     public function store(ZoomAccountRequest $request): RedirectResponse

@@ -111,6 +111,41 @@ class ZoomAccount extends Model
         return $query->whereDate('subscription_expires_at', '>=', $date);
     }
 
+    /**
+     * Urutan daftar di menu Akun Zoom:
+     *  1. langganan sudah berakhir,
+     *  2. langganan berakhir dalam 30 hari (yang paling dekat dulu),
+     *  3. sisanya, akun yang paling baru ditambahkan di atas.
+     * Hanya untuk tampilan daftar; kalender dan rekomendasi tetap memakai scopeOrdered.
+     */
+    public function scopeListOrder(Builder $query): Builder
+    {
+        $today = now()->startOfDay();
+        $todayStr = $today->format('Y-m-d');
+        // "< hari ke-31" sama artinya dengan "paling lama 30 hari dari sekarang" (badge amber di view)
+        $soonStr = $today->addDays(31)->format('Y-m-d');
+
+        return $query
+            ->orderByRaw('CASE WHEN subscription_expires_at < ? THEN 0 WHEN subscription_expires_at < ? THEN 1 ELSE 2 END', [$todayStr, $soonStr])
+            ->orderByRaw('CASE WHEN subscription_expires_at < ? THEN subscription_expires_at END ASC', [$soonStr])
+            ->orderByDesc('id');
+    }
+
+    /** Filter daftar Akun Zoom: search (nama/email), account_type, allowed_login_users, participant_capacity. */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        $filled = fn (string $key) => isset($filters[$key]) && $filters[$key] !== '';
+
+        return $query
+            ->when($filled('search'), function (Builder $q) use ($filters) {
+                $term = '%'.addcslashes(trim($filters['search']), '%_\\').'%';
+                $q->where(fn (Builder $w) => $w->where('name', 'like', $term)->orWhere('email', 'like', $term));
+            })
+            ->when($filled('account_type'), fn (Builder $q) => $q->where('account_type', $filters['account_type']))
+            ->when($filled('allowed_login_users'), fn (Builder $q) => $q->where('allowed_login_users', (int) $filters['allowed_login_users']))
+            ->when($filled('participant_capacity'), fn (Builder $q) => $q->where('participant_capacity', (int) $filters['participant_capacity']));
+    }
+
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');

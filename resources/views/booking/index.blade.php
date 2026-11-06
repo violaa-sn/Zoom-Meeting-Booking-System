@@ -28,13 +28,7 @@
                 <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Departemen" name="department_id"
                     :value="$f('department_id')" placeholder="Semua" :options="$departments->pluck('name', 'id')->all()" />
             @endif
-            <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Jenis" name="recurring" :value="$f('recurring')"
-                placeholder="Semua" :options="['1' => 'Berulang', '0' => 'Sekali']" />
-            <x-filter-input wrapperClass="col-6 col-md-4 col-xl-2" label="Dari tanggal" name="date_from" type="date"
-                :value="$f('date_from')" />
-            <x-filter-input wrapperClass="col-6 col-md-4 col-xl-2" label="Sampai tanggal" name="date_to" type="date"
-                :value="$f('date_to')" />
-            <div class="col-12 col-xl-auto d-flex gap-2 pb-3">
+            <div class="col-12 col-xl-auto filter-actions">
                 <x-button type="submit" variant="secondary" icon="search" class="flex-fill">Terapkan</x-button>
                 <x-button href="{{ route('booking.index') }}" variant="ghost">Atur ulang</x-button>
             </div>

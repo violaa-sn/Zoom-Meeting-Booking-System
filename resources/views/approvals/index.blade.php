@@ -11,7 +11,7 @@
                 placeholder="Nama atau username" />
             <x-filter-select wrapperClass="col-12 col-md-4 col-xl-3" label="Tipe akun diminta" name="account_type"
                 :value="request('account_type')" placeholder="Semua tipe" :options="$accountTypes" />
-            <div class="col-12 col-md-auto d-flex gap-2 pb-3">
+            <div class="col-12 col-md-auto filter-actions">
                 <x-button type="submit" variant="secondary" icon="search" class="flex-fill">Terapkan</x-button>
                 <x-button href="{{ route('approvals.index') }}" variant="ghost">Atur ulang</x-button>
             </div>
@@ -69,9 +69,6 @@
                             </td>
                             <td data-label="Tipe akun diminta">
                                 <x-badge tone="blue">{{ ucfirst($b->account_type) }}</x-badge>
-                                @if ($i['expired'])
-                                    <small class="d-block text-secondary mt-1">Semua tanggal sudah lewat</small>
-                                @endif
                             </td>
                             <td data-label="Keperluan">
                                 <div class="cell-main">
@@ -79,18 +76,23 @@
                                         peserta</small></div>
                             </td>
                             <td data-label="Keputusan">
-                                <div class="d-flex gap-2 justify-content-end">
-                                    {{-- Setujui membuka daftar rekomendasi akun; admin yang memilih akunnya --}}
-                                    <x-button variant="success" size="sm" icon="check" data-bs-toggle="modal"
-                                        data-bs-target="#approve-modal"
-                                        data-url="{{ route('approvals.recommend', $b) }}"
-                                        data-action="{{ route('approvals.approve', $b) }}"
-                                        data-summary="{{ $summary }}" :disabled="$i['expired']">Setujui</x-button>
-                                    <x-button variant="secondary" size="sm" icon="x" data-bs-toggle="modal"
-                                        data-bs-target="#reject-modal"
-                                        data-action="{{ route('approvals.reject', $b) }}"
-                                        data-summary="{{ $summary }}">Tolak</x-button>
-                                </div>
+                                @if ($i['expired'])
+                                    {{-- Semua tanggal sudah lewat: tidak bisa disetujui maupun ditolak --}}
+                                    <div class="text-end text-secondary small fw-semibold">Tanggal booking sudah lewat</div>
+                                @else
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        {{-- Setujui membuka daftar rekomendasi akun; admin yang memilih akunnya --}}
+                                        <x-button variant="success" size="sm" icon="check" data-bs-toggle="modal"
+                                            data-bs-target="#approve-modal"
+                                            data-url="{{ route('approvals.recommend', $b) }}"
+                                            data-action="{{ route('approvals.approve', $b) }}"
+                                            data-summary="{{ $summary }}">Setujui</x-button>
+                                        <x-button variant="secondary" size="sm" icon="x" data-bs-toggle="modal"
+                                            data-bs-target="#reject-modal"
+                                            data-action="{{ route('approvals.reject', $b) }}"
+                                            data-summary="{{ $summary }}">Tolak</x-button>
+                                    </div>
+                                @endif
                             </td>
                         </tr>
                     @empty

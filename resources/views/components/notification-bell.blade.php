@@ -3,8 +3,8 @@
     $me = auth()->user();
     $unread = $me->bookingNotifications()->unread()->count();
     $latest = $me->bookingNotifications()->latest()->limit(8)->get();
-    $tones = ['approved' => 'green', 'rejected' => 'red', 'cancelled' => 'grey'];
-    $labels = ['approved' => 'Disetujui', 'rejected' => 'Ditolak', 'cancelled' => 'Dibatalkan'];
+    $tones = ['approved' => 'green', 'rejected' => 'red', 'cancelled' => 'grey', 'expired' => 'amber'];
+    $labels = ['approved' => 'Disetujui', 'rejected' => 'Ditolak', 'cancelled' => 'Dibatalkan', 'expired' => 'Terlewat'];
 @endphp
 <div class="dropdown">
     <button class="btn user-btn position-relative" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside"

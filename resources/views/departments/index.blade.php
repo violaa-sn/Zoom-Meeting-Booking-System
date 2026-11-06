@@ -1,8 +1,19 @@
 @php $editing = old('_edit_id'); @endphp
 <x-layouts.app title="Departemen">
-    <x-page-header title="Departemen" subtitle="Kode departemen tampil sebagai label di kalender, mis. MIA atau KTB.">
+    <x-page-header title="Departemen" :count="$departments->count()" subtitle="Kode departemen tampil sebagai label di kalender, mis. MIA atau KTB.">
         <x-button icon="plus" data-bs-toggle="offcanvas" data-bs-target="#department-panel" data-mode="create">Tambah departemen</x-button>
     </x-page-header>
+
+    <form method="GET" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <x-filter-input wrapperClass="col-12 col-md-6 col-xl-4" label="Cari" name="search" :value="request('search')"
+                placeholder="Nama atau kode departemen" />
+            <div class="col-12 col-md-auto filter-actions">
+                <x-button type="submit" variant="secondary" icon="search" class="flex-fill">Terapkan</x-button>
+                <x-button href="{{ route('departments.index') }}" variant="ghost">Atur ulang</x-button>
+            </div>
+        </div>
+    </form>
 
     <div class="card overflow-hidden">
         <div class="table-responsive">
@@ -24,7 +35,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" data-label=""><div class="p-4 text-center text-secondary">Belum ada departemen. Tambahkan satu supaya bisa dipilih di data pengguna.</div></td></tr>
+                    <tr><td colspan="4" data-label=""><div class="p-4 text-center text-secondary">{{ request()->filled('search') ? 'Tidak ada departemen yang cocok.' : 'Belum ada departemen. Tambahkan satu supaya bisa dipilih di data pengguna.' }}</div></td></tr>
                 @endforelse
                 </tbody>
             </table>

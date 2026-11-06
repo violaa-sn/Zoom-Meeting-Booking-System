@@ -11,6 +11,25 @@
             Zoom</x-button>
     </x-page-header>
 
+    <form method="GET" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <x-filter-input wrapperClass="col-12 col-md-4 col-xl-3" label="Cari" name="search" :value="request('search')"
+                placeholder="Nama atau email akun" />
+            <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Tipe akun" name="account_type"
+                :value="request('account_type')" placeholder="Semua tipe" :options="$types" />
+            <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Kapasitas meeting" name="allowed_login_users"
+                :value="request('allowed_login_users')" placeholder="Semua"
+                :options="collect($meetingCapacities)->mapWithKeys(fn($n) => [$n => $n . ' meeting'])->all()" />
+            <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Maks. peserta" name="participant_capacity"
+                :value="request('participant_capacity')" placeholder="Semua"
+                :options="collect($participantCapacities)->mapWithKeys(fn($n) => [$n => number_format($n, 0, ',', '.') . ' peserta'])->all()" />
+            <div class="col-12 col-xl-auto filter-actions">
+                <x-button type="submit" variant="secondary" icon="search" class="flex-fill">Terapkan</x-button>
+                <x-button href="{{ route('zoom-accounts.index') }}" variant="ghost">Atur ulang</x-button>
+            </div>
+        </div>
+    </form>
+
     <div class="card overflow-hidden">
         <div class="table-responsive">
             <table class="table table-stack mb-0">
@@ -39,7 +58,6 @@
                                 'status',
                                 'is_default',
                                 'color',
-                                'sort_order',
                             ]) + ['subscription_expires_at' => $a->subscription_expires_at->format('Y-m-d')];
                         @endphp
                         <tr>
@@ -85,8 +103,7 @@
                     @empty
                         <tr>
                             <td colspan="7" data-label="">
-                                <div class="p-4 text-center text-secondary">Belum ada akun Zoom. Tambahkan satu supaya
-                                    kalender bisa dipakai.</div>
+                                <div class="p-4 text-center text-secondary">{{ request()->hasAny(['search', 'account_type', 'allowed_login_users', 'participant_capacity']) ? 'Tidak ada akun Zoom yang cocok.' : 'Belum ada akun Zoom. Tambahkan satu supaya kalender bisa dipakai.' }}</div>
                             </td>
                         </tr>
                     @endforelse
@@ -136,12 +153,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="row g-3">
-                        <x-select wrapperClass="col-sm-6" label="Status" name="status" :options="$statuses"
-                            value="active" />
-                        <x-input wrapperClass="col-sm-6" label="Urutan tampil" name="sort_order" type="number"
-                            min="0" value="0" />
-                    </div>
+                    <x-select label="Status" name="status" :options="$statuses" value="active" />
                     <x-checkbox label="Jadikan akun utama" name="is_default"
                         hint="Akun utama tampil pertama di kalender dan paling atas di rekomendasi." />
                 </div>

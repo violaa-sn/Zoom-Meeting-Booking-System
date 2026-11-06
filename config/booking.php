@@ -11,7 +11,7 @@ return [
     'out_of_hours_message' => 'Hanya bisa 6 pagi - 12 malam',
 
     // Rentang maksimal yang boleh ditampilkan di kalender (hari).
-    'max_range_days' => 14,
+    'max_range_days' => null, 
 
     // Pengulangan TIDAK dibatasi tahun. Yang dibatasi hanya jumlah tanggal per pengajuan,
     // supaya satu pengajuan tidak membuat puluhan ribu baris dan server jadi lambat.

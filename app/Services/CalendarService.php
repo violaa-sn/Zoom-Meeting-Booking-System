@@ -48,7 +48,7 @@ class CalendarService
     /**
      * Rentang kalender dari query ?from=&to= (format Y-m-d).
      * Tanpa input: pekan ini (Senin-Minggu). Hanya "from": 7 hari sejak tanggal itu.
-     * "to" sebelum "from" dianggap tidak valid dan diganti 7 hari. Dibatasi max_range_days.
+     * "to" sebelum "from" dianggap tidak valid dan diganti 7 hari. Dibatasi max_range_days (kosong/0 = tanpa batas).
      *
      * @return array{0: CarbonImmutable, 1: CarbonImmutable, 2: bool, 3: int}  [from, to, dipersingkat?, jumlah hari]
      */
@@ -72,9 +72,10 @@ class CalendarService
             $end = $start->addDays(6);
         }
 
-        $max = (int) config('booking.max_range_days', 14);
+        // max_range_days kosong (null) atau 0 = tanpa batas
+        $max = (int) config('booking.max_range_days');
         $days = (int) $start->diffInDays($end) + 1;
-        $clamped = $days > $max;
+        $clamped = $max > 0 && $days > $max;
         if ($clamped) {
             $end = $start->addDays($max - 1);
             $days = $max;

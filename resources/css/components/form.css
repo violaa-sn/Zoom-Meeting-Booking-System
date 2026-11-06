@@ -35,3 +35,12 @@
 .field-error:empty {
     display: none;
 }
+
+/* Tombol Terapkan / Atur ulang di form filter: tinggi sama dengan input, rata bawah dengan kolom di sebelahnya */
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.filter-actions .btn {
+    min-height: 2.5rem;
+}

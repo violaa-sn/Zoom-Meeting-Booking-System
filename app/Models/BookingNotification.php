@@ -13,6 +13,7 @@ class BookingNotification extends Model
     public const TYPE_APPROVED = 'approved';
     public const TYPE_REJECTED = 'rejected';
     public const TYPE_CANCELLED = 'cancelled';
+    public const TYPE_EXPIRED = 'expired';
 
     // Tabel hanya punya created_at (diisi default database), tanpa updated_at
     public const UPDATED_AT = null;

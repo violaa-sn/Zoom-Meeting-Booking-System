@@ -23,7 +23,7 @@ class UserController extends Controller
             ->when($request->filled('department_id'), fn ($q) => $q->where('department_id', $request->query('department_id')))
             ->when($request->filled('role'), fn ($q) => $q->where('role', $request->query('role')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->query('status')))
-            ->orderBy('name')
+            ->latest('id') // pengguna yang baru ditambahkan tampil paling atas
             ->paginate(15)
             ->withQueryString();
 

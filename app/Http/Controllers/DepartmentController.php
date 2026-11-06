@@ -5,15 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DepartmentController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        return view('departments.index', [
-            'departments' => Department::withCount('users')->orderBy('name')->get(),
-        ]);
+        $departments = Department::withCount('users')
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $term = '%'.addcslashes(trim($request->query('search')), '%_\\').'%';
+                $q->where(fn ($w) => $w->where('name', 'like', $term)->orWhere('code', 'like', $term));
+            })
+            ->latest('id') // yang baru ditambahkan tampil paling atas
+            ->get();
+
+        return view('departments.index', ['departments' => $departments]);
     }
 
     public function store(DepartmentRequest $request): RedirectResponse

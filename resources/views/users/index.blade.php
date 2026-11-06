@@ -5,7 +5,7 @@
     $editing = old('_edit_id');
 @endphp
 <x-layouts.app title="Pengguna">
-    <x-page-header title="Pengguna" subtitle="Kelola siapa yang boleh login dan meminjam akun Zoom.">
+    <x-page-header title="Pengguna" :count="$users->total()" subtitle="Kelola siapa yang boleh login dan meminjam akun Zoom.">
         <x-button icon="plus" data-bs-toggle="offcanvas" data-bs-target="#user-panel" data-mode="create">Tambah
             pengguna</x-button>
     </x-page-header>
@@ -14,13 +14,13 @@
         <div class="row g-2 align-items-end">
             <x-filter-input wrapperClass="col-12 col-md-4 col-xl-3" label="Cari" name="search" :value="request('search')"
                 placeholder="Nama atau username" />
-            <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Departemen" name="dept" :value="request('dept')"
+            <x-filter-select wrapperClass="col-6 col-md-4 col-xl-2" label="Departemen" name="department_id" :value="request('department_id')"
                 placeholder="Semua" :options="$deptOptions" />
             <x-filter-select wrapperClass="col-6 col-md-2 col-xl-2" label="Peran" name="role" :value="request('role')"
                 placeholder="Semua" :options="$roles" />
             <x-filter-select wrapperClass="col-6 col-md-2 col-xl-2" label="Status" name="status" :value="request('status')"
                 placeholder="Semua" :options="$statuses" />
-            <div class="col-12 col-xl-auto d-flex gap-2 pb-3">
+            <div class="col-12 col-xl-auto filter-actions">
                 <x-button type="submit" variant="secondary" icon="search" class="flex-fill">Terapkan</x-button>
                 <x-button href="{{ route('users.index') }}" variant="ghost">Atur ulang</x-button>
             </div>

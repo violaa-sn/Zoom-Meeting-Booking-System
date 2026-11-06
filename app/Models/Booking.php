@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'rejection_reason',
     'approved_at',
     'cancelled_at',
+    'expired_notified_at',
 ])]
 class Booking extends Model
 {
@@ -78,6 +79,7 @@ class Booking extends Model
             'recurrence_ends_after' => 'integer',
             'approved_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'expired_notified_at' => 'datetime',
         ];
     }
 

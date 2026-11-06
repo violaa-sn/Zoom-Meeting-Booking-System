@@ -94,7 +94,7 @@ class BookingApprovalService
 
             $intervals = $this->upcoming($this->expander->expand($booking));
             if ($intervals === []) {
-                throw new DomainException('Semua tanggal pengajuan ini sudah lewat. Tolak saja pengajuannya.');
+                throw new DomainException('Tanggal booking sudah lewat.');
             }
 
             $lastDay = collect($intervals)->max(fn ($i) => $i['ends_at']->format('Y-m-d'));
@@ -143,6 +143,54 @@ class BookingApprovalService
         });
     }
 
+    /**
+     * Beri tahu peminjam bahwa pengajuannya sudah lewat tanggal tetapi admin belum menyetujui.
+     * Hanya untuk booking pending yang SEMUA tanggalnya sudah berakhir; sekali per booking
+     * (ditandai expired_notified_at). Aman dipanggil berulang.
+     *
+     * @return int jumlah notifikasi yang dibuat
+     */
+    public function notifyExpiredPending(): int
+    {
+        $sent = 0;
+
+        // Booking yang tanggal mulainya masih hari ini atau mendatang pasti belum lewat semua, tidak perlu di-expand
+        Booking::pending()
+            ->whereNull('expired_notified_at')
+            ->whereDate('starts_on', '<=', now()->toDateString())
+            ->with('days')
+            ->chunkById(100, function ($bookings) use (&$sent) {
+                foreach ($bookings as $booking) {
+                    if ($this->upcoming($this->expander->expand($booking)) !== []) {
+                        continue;
+                    }
+
+                    DB::transaction(function () use ($booking, &$sent) {
+                        // Kunci baris supaya dua request bersamaan tidak mengirim notifikasi ganda
+                        $fresh = Booking::lockForUpdate()->find($booking->id);
+                        if (! $fresh || ! $fresh->isPending() || $fresh->expired_notified_at !== null) {
+                            return;
+                        }
+
+                        $label = $fresh->purpose === 'lainnya' ? ($fresh->purpose_other ?: 'Lainnya') : ucfirst($fresh->purpose);
+                        $date = $fresh->starts_on->locale('id')->translatedFormat('D, j M Y');
+                        $time = substr($fresh->start_time, 0, 5).'–'.substr($fresh->end_time, 0, 5);
+
+                        BookingNotification::create([
+                            'user_id' => $fresh->user_id,
+                            'booking_id' => $fresh->id,
+                            'type' => BookingNotification::TYPE_EXPIRED,
+                            'message' => "Booking \"{$label}\" ({$date}, {$time}) sudah lewat tanggal dan belum disetujui admin.",
+                        ]);
+                        $fresh->forceFill(['expired_notified_at' => now()])->save();
+                        $sent++;
+                    });
+                }
+            });
+
+        return $sent;
+    }
+
     /** @throws DomainException */
     public function reject(Booking $booking, User $admin, string $reason): void
     {
@@ -151,6 +199,9 @@ class BookingApprovalService
 
             if (! $booking->isPending()) {
                 throw new DomainException('Pengajuan ini sudah diproses.');
+            }
+            if ($this->upcoming($this->expander->expand($booking)) === []) {
+                throw new DomainException('Tanggal booking sudah lewat.');
             }
 
             $booking->update([
